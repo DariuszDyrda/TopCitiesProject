@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Downshift from 'downshift';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
-import { renderInput, renderSuggestion, getSuggestions } from './autocompleteUtils';
+import { renderInput, renderSuggestion, getSuggestions, checkIfValueMatchesSuggestions } from './autocompleteUtils';
 import { strings } from '../../consts/strings';
 
 
@@ -32,7 +33,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function Form() {
+export default function Input(props) {
   const classes = useStyles();
 
   return (
@@ -49,11 +50,20 @@ export default function Form() {
           isOpen,
           openMenu,
           selectedItem,
+          selectItem,
         }) => {
           const { onBlur, onChange, onFocus, ...inputProps } = getInputProps({
             onChange: event => {
+              selectItem(event.target.value);
+              props.setButtonDisabled(true);
               if (event.target.value === '') {
                 clearSelection();
+              }
+            },
+            onSelect: event => {
+              if(checkIfValueMatchesSuggestions(event.target.value)) {
+                props.setInputValue(event.target.value);
+                props.setButtonDisabled(false);
               }
             },
             onFocus: openMenu,
@@ -65,7 +75,7 @@ export default function Form() {
               {renderInput({
                 fullWidth: true,
                 classes,
-                label: 'Countries',
+                label: strings.COUNTRY_INPUT_LABEL,
                 InputLabelProps: getLabelProps({ shrink: true }),
                 InputProps: { onBlur, onChange, onFocus },
                 inputProps,
@@ -92,4 +102,9 @@ export default function Form() {
       </Downshift>
     </div>
   );
+}
+
+Input.propTypes = {
+  setInputValue: PropTypes.func.isRequired,
+  setButtonDisabled: PropTypes.func.isRequired,
 }

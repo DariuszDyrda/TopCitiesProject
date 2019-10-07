@@ -81,3 +81,10 @@ renderSuggestion.propTypes = {
           return keep;
         });
   }
+
+  export function checkIfValueMatchesSuggestions(value) {
+    const inputValue = deburr(value.trim()).toLowerCase();
+    const suggestionsLabels = suggestions.map(element => (deburr(element.label.trim()).toLowerCase()));
+
+    return suggestionsLabels.includes(inputValue);
+  }
