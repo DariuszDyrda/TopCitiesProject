@@ -20,9 +20,13 @@ export const Form = (props) => {
     const classes = useStyles();
     const [buttonDisabled, setButtonDisabled] = useState(true);
     return (
-        <form noValidate autoComplete="off" onSubmit={() => {}} className={classes.root}>
+        <form noValidate autoComplete="off" onSubmit={props.handleSubmit.bind(this, inputValue)} className={classes.root}>
             <Input setInputValue={setInputValue} setButtonDisabled={setButtonDisabled}/>
             <Button disabled={buttonDisabled} variant="contained" type='submit' color="primary">{ strings.FORM_BUTTON_TEXT }</Button>
         </form>
     )
+}
+
+Form.propTypes = {
+    handleSubmit: PropTypes.func.isRequired,
 }
