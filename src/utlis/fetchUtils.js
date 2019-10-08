@@ -58,23 +58,30 @@ export async function fetchCities(countryCode) {
 
 async function getXCitiesWithMaxPollution(cities, x) {
     cities.sort((a, b) => (b.measurements[0].value - a.measurements[0].value));
-    let topCities = cities.slice(0, x);
-    let array = await Promise.all(
-                    topCities.map(async element => {
-                        let query;
-                        let city;
-                        if(element.coordinates) {
-                            query = `${element.coordinates.latitude}, ${element.coordinates.longitude}`;
-                            city = await findCityByQuery(query);
-                        }
-                        if(!city) {
-                            query = element.city;
-                        }
-                        city = await findCityByQuery(query);
 
-                        return { city, measurements: element.measurements }
-                    })
-                );
-    return array;
+    let topCities = [];
+    
+    do {
+        let city = await getCitysName(cities.shift());
+        if(!topCities.find(element => element.city === city.city)) {
+            topCities.push(city);
+        }
+    } while(topCities.length < x)
+    
+    return topCities;
 }
 
+async function getCitysName(element) {
+    let query;
+    let city;
+    if(element.coordinates) {
+        query = `${element.coordinates.latitude}, ${element.coordinates.longitude}`;
+        city = await findCityByQuery(query);
+    }
+    if(!city) {
+        query = element.city;
+        city = await findCityByQuery(query);
+    }
+
+    return { city, measurements: element.measurements }
+}
