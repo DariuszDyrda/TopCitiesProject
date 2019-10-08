@@ -6,18 +6,21 @@ import './App.css';
 
 function App() {
   const [cities, setCities] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   async function handleSubmit(inputValue, e) {
+    setIsLoading(true);
     e.preventDefault();
     const countryCode = getCountryIsoCode(inputValue.trim());
     setCities(await fetchCities(countryCode));
+    setIsLoading(false);
   }
-
-  return (
-    <div className="App">
-        <Form handleSubmit={handleSubmit}/>
-        <DataList cities={cities} />
-    </div>
-  );
-}
+    return (
+      <div className="App">
+          <Form handleSubmit={handleSubmit}/>
+          <DataList cities={cities} isLoading={isLoading} />
+      </div>
+    );
+  }
 
 export default App;
