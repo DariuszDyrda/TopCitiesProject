@@ -1,7 +1,8 @@
 import * as countries from 'i18n-iso-countries';
 import * as axios from 'axios';
 import { API, PARAMS } from '../consts/api';
-import { CONFIG } from '../consts/config';
+import { MAX_POLLUTED_CITIES } from '../consts/config';
+import { findCityByQuery } from './geocode'
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
 export function getCountryIsoCode(country) {
@@ -38,26 +39,42 @@ export async function fetchCities(countryCode) {
           }
     }
     await getPage();
-    cities = getAvaragePollutionForEveryCity(cities);
-    return getXCitiesWithMaxPollution(cities, CONFIG.MAX_POLLUTED_CITIES);
+
+    return getXCitiesWithMaxPollution(cities, MAX_POLLUTED_CITIES);
 }
 
-function getAvaragePollutionForEveryCity(data) {
-    let array = data.map(element => ({ city: element.city, measurements: element.measurements, count: 1}));
+// function getAvaragePollutionForEveryCity(array) {
+//     for(let i = 0; i < array.length-1; ++i) {
+//         if(array[i].city === array[i+1].city) {
+//             array[i].count++;
+//             array[i].measurements[0].value += array[i+1].measurements[0].value;
+//             array.splice(i+1, 1);
+//             --i;
+//         }
+//     }
+//     array.forEach(element => { element.measurements[0].value = element.measurements[0].value / element.count});
+//     return array;
+// }
 
-    for(let i = 0; i < array.length-1; ++i) {
-        if(array[i].city === array[i+1].city) {
-            array[i].count++;
-            array[i].measurements[0].value += array[i+1].measurements[0].value;
-            array.splice(i+1, 1);
-            --i;
-        }
-    }
-    array.forEach(element => { element.measurements[0].value = element.measurements[0].value / element.count});
+async function getXCitiesWithMaxPollution(cities, x) {
+    cities.sort((a, b) => (b.measurements[0].value - a.measurements[0].value));
+    let topCities = cities.slice(0, x);
+    let array = await Promise.all(
+                    topCities.map(async element => {
+                        let query;
+                        let city;
+                        if(element.coordinates) {
+                            query = `${element.coordinates.latitude}, ${element.coordinates.longitude}`;
+                            city = await findCityByQuery(query);
+                        }
+                        if(!city) {
+                            query = element.city;
+                        }
+                        city = await findCityByQuery(query);
+
+                        return { city, measurements: element.measurements }
+                    })
+                );
     return array;
 }
 
-function getXCitiesWithMaxPollution(cities, x) {
-    cities.sort((a, b) => (b.measurements[0].value - a.measurements[0].value));
-    return cities.slice(0, x);
-}
