@@ -26,7 +26,7 @@ export const CityDescriptionPanel = (props) => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography className={classes.heading}>Expansion Panel 1</Typography>
+          <Typography className={classes.heading}>{props.name}</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Typography>
