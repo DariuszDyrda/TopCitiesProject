@@ -7,8 +7,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import * as axios from 'axios';
-import { API, DESCRIPTION_PARAMS } from '../../consts/api';
+import { getDescription } from '../../utlis/fetchUtils';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -28,11 +27,11 @@ export const CityDescriptionPanel = (props) => {
     const [description, setDescription] = useState("");
     const [isFetching, setIsFetching] = useState(false);
 
-    const fetchDescription = async (event, expanded) => {
+    const handlePanelClick = async (event, expanded) => {
       if(expanded && !description) {
         let data;
         try {
-          data = await getDescription(`${props.name}, ${props.country}`);
+          data = await getDescription(props.name, props.country);
         }
         catch(e) {
           data = e.message;
@@ -42,49 +41,8 @@ export const CityDescriptionPanel = (props) => {
       }
     }
 
-    const getDescription = async title => {
-      let retryCounter = 2;
-      function fetchDescription(name) {
-        return axios.get(API.WIKIPEDIA_BASE_URL, {
-          params: {
-            ...DESCRIPTION_PARAMS,
-            titles: name
-          }
-        })
-          .then(res => {
-            const pages = res.data.query.pages;
-            const data = pages[Object.keys(pages)[0]].extract;
-            if(!data) {
-              throw new Error("No description");
-            }
-            return data;
-          })
-          .catch(err => {
-            if(retryCounter < 1) {
-              return err;
-            }
-            let name = props.name;
-            if(retryCounter < 2) {
-              name = splitBilingualName(name);
-            }
-            retryCounter--;
-            return fetchDescription(name);
-          }) 
-      }
-      return fetchDescription(title);
-    }
-
-    const splitBilingualName = (name) => {
-      let splitChars = ['/', '(', '-'];
-      let splittedWord;
-      do {
-        splittedWord = name.split(splitChars.shift());
-      } while(splittedWord.length < 2 && splitChars.length > 0)
-      return splittedWord[0].trim();
-    }
-
     return (
-        <ExpansionPanel TransitionProps={{ unmountOnExit: true }} onChange={fetchDescription}>
+        <ExpansionPanel TransitionProps={{ unmountOnExit: true }} onChange={handlePanelClick}>
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"

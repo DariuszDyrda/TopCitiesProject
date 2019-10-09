@@ -1,6 +1,6 @@
 import * as countries from 'i18n-iso-countries';
 import * as axios from 'axios';
-import { API, POLLUTION_PARAMS } from '../consts/api';
+import { API, POLLUTION_PARAMS, DESCRIPTION_PARAMS } from '../consts/api';
 import { MAX_POLLUTED_CITIES } from '../consts/config';
 import { findCityByQuery } from './geocode'
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
@@ -43,28 +43,15 @@ export async function fetchCities(countryCode) {
     return getXCitiesWithMaxPollution(cities, MAX_POLLUTED_CITIES);
 }
 
-// function getAvaragePollutionForEveryCity(array) {
-//     for(let i = 0; i < array.length-1; ++i) {
-//         if(array[i].city === array[i+1].city) {
-//             array[i].count++;
-//             array[i].measurements[0].value += array[i+1].measurements[0].value;
-//             array.splice(i+1, 1);
-//             --i;
-//         }
-//     }
-//     array.forEach(element => { element.measurements[0].value = element.measurements[0].value / element.count});
-//     return array;
-// }
-
 async function getXCitiesWithMaxPollution(cities, x) {
     cities.sort((a, b) => (b.measurements[0].value - a.measurements[0].value));
 
     let topCities = [];
     
     do {
-        let city = await getCitysName(cities.shift());
-        if(!topCities.find(element => element.city === city.city)) {
-            topCities.push(city);
+        let place = await getCitysName(cities.shift());
+        if(!topCities.find(element => element.city === place.city)) {
+            topCities.push(place);
         }
     } while(topCities.length < x)
     
@@ -85,3 +72,45 @@ async function getCitysName(element) {
 
     return { ...place, measurements: element.measurements }
 }
+
+// Wikipedia description fetch
+export const getDescription = async (city, country) => {
+    let retryCounter = 2;
+    function fetchDescription(title) {
+      return axios.get(API.WIKIPEDIA_BASE_URL, {
+        params: {
+          ...DESCRIPTION_PARAMS,
+          titles: title
+        }
+      })
+        .then(res => {
+          const pages = res.data.query.pages;
+          const data = pages[Object.keys(pages)[0]].extract;
+          if(!data) {
+            throw new Error("No description");
+          }
+          return data;
+        })
+        .catch(err => {
+          if(retryCounter < 1) {
+            return err;
+          }
+          let name = city;
+          if(retryCounter < 2) {
+            name = splitBilingualName(name);
+          }
+          retryCounter--;
+          return fetchDescription(name);
+        }) 
+    }
+    return fetchDescription(`${city}, ${country}`);
+  }
+
+const splitBilingualName = (name) => {
+    let splitChars = ['/', '(', '-'];
+    let splittedWord;
+    do {
+      splittedWord = name.split(splitChars.shift());
+    } while(splittedWord.length < 2 && splitChars.length > 0)
+    return splittedWord[0].trim();
+  }
