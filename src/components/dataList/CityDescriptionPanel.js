@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -31,32 +32,55 @@ export const CityDescriptionPanel = (props) => {
       if(expanded && !description) {
         let data;
         try {
-          data = await getDescriptions(props.name);
+          data = await getDescription(`${props.name}, ${props.country}`);
         }
         catch(e) {
-          console.log(e);
-          let name = props.name.split("/")[0].trim();
-          data = await getDescriptions(name);
+          data = e.message;
         }
         setDescription(data);
         setIsFetching(false);
       }
     }
 
-    const getDescriptions = async name => {
-      return axios.get(API.WIKIPEDIA_BASE_URL, {
-        params: {
-          ...DESCRIPTION_PARAMS,
-          titles: name
-        }
-      })
-        .then(res => {
-          const data = res.data.query.pages[Object.keys(res.data.query.pages)[0]].extract;
-          if(!data) {
-            throw new Error("No description");
+    const getDescription = async title => {
+      let retryCounter = 2;
+      function fetchDescription(name) {
+        return axios.get(API.WIKIPEDIA_BASE_URL, {
+          params: {
+            ...DESCRIPTION_PARAMS,
+            titles: name
           }
-          return data;
         })
+          .then(res => {
+            const pages = res.data.query.pages;
+            const data = pages[Object.keys(pages)[0]].extract;
+            if(!data) {
+              throw new Error("No description");
+            }
+            return data;
+          })
+          .catch(err => {
+            if(retryCounter < 1) {
+              return err;
+            }
+            let name = props.name;
+            if(retryCounter < 2) {
+              name = splitBilingualName(name);
+            }
+            retryCounter--;
+            return fetchDescription(name);
+          }) 
+      }
+      return fetchDescription(title);
+    }
+
+    const splitBilingualName = (name) => {
+      let splitChars = ['/', '(', '-'];
+      let splittedWord;
+      do {
+        splittedWord = name.split(splitChars.shift());
+      } while(splittedWord.length < 2 && splitChars.length > 0)
+      return splittedWord[0].trim();
     }
 
     return (
@@ -76,4 +100,9 @@ export const CityDescriptionPanel = (props) => {
         </ExpansionPanelDetails>
       </ExpansionPanel >
     )
+}
+
+CityDescriptionPanel.propTypes = {
+  name: PropTypes.string.isRequired,
+  country: PropTypes.string.isRequired,
 }

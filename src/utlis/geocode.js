@@ -5,7 +5,9 @@ import { GEOCODE_LANGUAGE } from '../consts/config';
 export async function findCityByQuery(query) {
     return opencage.geocode({key: OPENCAGE_API_KEY, q: query, language: GEOCODE_LANGUAGE})
         .then(res => {
-            return (res.results[0].components.city || res.results[0].components.town || res.results[0].components.village || undefined);
+            let city = (res.results[0].components.city || res.results[0].components.town || res.results[0].components.village || undefined)
+            let country = res.results[0].components.country;
+            return { city, country };
         })
         .catch(err => {
             console.log(err);

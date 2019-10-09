@@ -7,7 +7,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 export const DataList = (props) => {
     const panels = props.cities.map((element, i) => {
         return (
-            <CityDescriptionPanel name={element.city} key={i} />
+            <CityDescriptionPanel name={element.city} country={element.country} key={i} />
         )
     })
 

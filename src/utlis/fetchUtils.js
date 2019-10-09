@@ -73,15 +73,15 @@ async function getXCitiesWithMaxPollution(cities, x) {
 
 async function getCitysName(element) {
     let query;
-    let city;
+    let place;
     if(element.coordinates) {
         query = `${element.coordinates.latitude}, ${element.coordinates.longitude}`;
-        city = await findCityByQuery(query);
+        place = await findCityByQuery(query);
     }
-    if(!city) {
+    if(!place || !place.city || !place.country) {
         query = element.city;
-        city = await findCityByQuery(query);
+        place = await findCityByQuery(query);
     }
 
-    return { city, measurements: element.measurements }
+    return { ...place, measurements: element.measurements }
 }
