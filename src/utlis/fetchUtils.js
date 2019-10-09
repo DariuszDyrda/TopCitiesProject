@@ -1,16 +1,20 @@
 import * as countries from 'i18n-iso-countries';
 import * as axios from 'axios';
+import deburr from 'lodash/deburr';
 import { API, POLLUTION_PARAMS, DESCRIPTION_PARAMS } from '../consts/api';
-import { MAX_POLLUTED_CITIES } from '../consts/config';
+import { MAX_POLLUTED_CITIES, GEOCODE_LANGUAGE } from '../consts/config';
 import { findCityByQuery } from './geocode'
+
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
-export function getCountryIsoCode(country) {
-    return countries.getAlpha2Code(country, 'en');
+function getCountryIsoCode(country) {
+    return countries.getAlpha2Code(deburr(country), GEOCODE_LANGUAGE);
 }
 
-export async function fetchCities(countryCode) {
+export async function fetchCities(country) {
+    const countryCode = getCountryIsoCode(country);
     let cities = [];
+    // fetch with support for pagination
     async function getPage(page = 1) {
         const response = await axios.get(API.CITIES_POLLUTION_BASE_URL, {
             params: {
@@ -28,12 +32,8 @@ export async function fetchCities(countryCode) {
           .catch(err => {
             console.log(err);
           });
-          if(page === 1) {
-              cities = [...response.results];
-          }
-          else if(page > 1) {
-            cities = cities.concat(response.results)
-          }
+          page === 1 ? cities = [...response.results] : cities = cities.concat(response.results);
+
           if(response.meta.limit * page < response.meta.found) {
               await getPage(++response.meta.page);
           }
@@ -76,6 +76,7 @@ async function getCitysName(element) {
 // Wikipedia description fetch
 export const getDescription = async (city, country) => {
     let retryCounter = 2;
+    //when description is empty it will try to fetch with different title, up to 3 times
     function fetchDescription(title) {
       return axios.get(API.WIKIPEDIA_BASE_URL, {
         params: {
@@ -107,6 +108,7 @@ export const getDescription = async (city, country) => {
   }
 
 const splitBilingualName = (name) => {
+    // some cities returned by Opencage are in bilingual format, so they habe to be splited before wikipedia request (for example "Llangréu/Langreo")
     let splitChars = ['/', '(', '-'];
     let splittedWord;
     do {

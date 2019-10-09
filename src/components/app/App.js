@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getCountryIsoCode, fetchCities } from '../../utlis/fetchUtils';
+import { fetchCities } from '../../utlis/fetchUtils';
 import { Form } from '../form/Form';
 import { DataList } from '../dataList/DataList';
 import './App.css';
@@ -11,8 +11,7 @@ function App() {
   async function handleSubmit(inputValue, e) {
     setIsLoading(true);
     e.preventDefault();
-    const countryCode = getCountryIsoCode(inputValue.trim());
-    setCities(await fetchCities(countryCode));
+    setCities(await fetchCities(inputValue.trim()));
     setIsLoading(false);
   }
     return (
