@@ -1,6 +1,6 @@
 import * as countries from 'i18n-iso-countries';
 import * as axios from 'axios';
-import { API, PARAMS } from '../consts/api';
+import { API, POLLUTION_PARAMS } from '../consts/api';
 import { MAX_POLLUTED_CITIES } from '../consts/config';
 import { findCityByQuery } from './geocode'
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
@@ -15,7 +15,7 @@ export async function fetchCities(countryCode) {
         const response = await axios.get(API.CITIES_POLLUTION_BASE_URL, {
             params: {
               country: countryCode,
-              parameter: PARAMS.parameter,
+              parameter: POLLUTION_PARAMS.parameter,
               order_by: 'city',
               limit: 1000,
               page: page
