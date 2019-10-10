@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Downshift from 'downshift';
 import { makeStyles } from '@material-ui/core/styles';
@@ -35,10 +36,18 @@ const useStyles = makeStyles(theme => ({
 
 export default function Input(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const persistedInputValue = useSelector(state => state.inputValue);
+  const [input, setInput] = useState(persistedInputValue);
+
+  useEffect(() => {
+    Downshift.defaultProps.onSelect();
+    dispatch({ type: "CHANGE_INPUT_VALUE", payload: input });
+  }, [dispatch, input])
 
   return (
     <div className={classes.root}>
-      <Downshift id="downshift-options">
+      <Downshift initialSelectedItem={input}>
         {({
           clearSelection,
           getInputProps,
@@ -65,8 +74,10 @@ export default function Input(props) {
                 props.setInputValue(event.target.value);
                 props.setButtonDisabled(false);
               }
+              setInput(event.target.value);
             },
             onFocus: openMenu,
+            autoFocus: true,
             placeholder: strings.COUNTRY_INPUT_PLACEHOLDER,
           });
 
