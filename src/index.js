@@ -8,7 +8,7 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 import './index.css';
 import App from './components/app/App';
 
-const rootReducer = (state = { inputValue: "" }, action) => {
+const rootReducer = (state = { inputValue: "", error: null }, action) => {
     switch(action.type) {
         case 'CHANGE_INPUT_VALUE': {
             return { ...state, inputValue: action.payload }
@@ -25,6 +25,7 @@ const rootReducer = (state = { inputValue: "" }, action) => {
 const persistConfig = {
     key: 'root',
     storage,
+    whitelist: ['inputValue'],
   }
   
 const persistedReducer = persistReducer(persistConfig, rootReducer)
