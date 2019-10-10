@@ -91,8 +91,19 @@ export async function dataFetching(inputValue, dispatch) {
   }
 }
 
-// Wikipedia description fetch
-export const getDescription = async (city, country) => {
+// Wikipedia description fetch -------------------------------------------------------
+export async function descryptionFetching(city, country, dispatch) {
+  const splitBilingualName = (name) => {
+    // some cities returned by Opencage are in bilingual format, so they havee to be splited before wikipedia request (for example "Llangréu/Langreo")
+    let splitChars = ['/', '(', '-'];
+    let splittedWord;
+    do {
+      splittedWord = name.split(splitChars.shift());
+    } while(splittedWord.length < 2 && splitChars.length > 0)
+    return splittedWord[0].trim();
+  }
+
+  const getDescription = async (city, country) => {
     let retryCounter = 2;
     //when description is empty it will try to fetch with different title, up to 3 times
     function fetchDescription(title) {
@@ -112,7 +123,11 @@ export const getDescription = async (city, country) => {
         })
         .catch(err => {
           if(retryCounter < 1) {
-            return err;
+            if(err.message === "No description") {
+              throw err;
+            }
+            dispatch({ type: 'SET_ERROR', payload: err})
+            throw err;
           }
           let name = city;
           if(retryCounter < 2) {
@@ -124,16 +139,8 @@ export const getDescription = async (city, country) => {
     }
     return fetchDescription(`${city}, ${country}`);
   }
-
-const splitBilingualName = (name) => {
-    // some cities returned by Opencage are in bilingual format, so they havee to be splited before wikipedia request (for example "Llangréu/Langreo")
-    let splitChars = ['/', '(', '-'];
-    let splittedWord;
-    do {
-      splittedWord = name.split(splitChars.shift());
-    } while(splittedWord.length < 2 && splitChars.length > 0)
-    return splittedWord[0].trim();
-  }
+  return getDescription(city, country);
+}
 
   export const clearDescriptionText = (description) => {
     const stringsToRemove = [' (listen)', ' see also other names'];

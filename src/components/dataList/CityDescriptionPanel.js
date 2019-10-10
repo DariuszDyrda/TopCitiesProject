@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -7,7 +8,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { getDescription, clearDescriptionText } from '../../utlis/fetchUtils';
+import { descryptionFetching, clearDescriptionText } from '../../utlis/fetchUtils';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -24,6 +25,7 @@ const useStyles = makeStyles(theme => ({
 
 export const CityDescriptionPanel = (props) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
     const [description, setDescription] = useState("");
     const [isFetching, setIsFetching] = useState(false);
 
@@ -31,7 +33,8 @@ export const CityDescriptionPanel = (props) => {
       if(expanded && !description) {
         let data;
         try {
-          data = await getDescription(props.name, props.country);
+          data = await descryptionFetching(props.name, props.country, dispatch);
+          console.log(data)
           data = clearDescriptionText(data);
         }
         catch(e) {
