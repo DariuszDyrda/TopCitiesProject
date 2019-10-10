@@ -13,6 +13,9 @@ const rootReducer = (state = { inputValue: "" }, action) => {
         case 'CHANGE_INPUT_VALUE': {
             return { ...state, inputValue: action.payload }
         }
+        case 'SET_ERROR': {
+            return { ...state, error: action.payload }
+        }
         default:
             return state;
     }

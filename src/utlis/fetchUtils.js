@@ -7,11 +7,11 @@ import { findCityByQuery } from './geocode'
 
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
-function getCountryIsoCode(country) {
+export async function dataFetching(inputValue, dispatch) {
+  function getCountryIsoCode(country) {
     return countries.getAlpha2Code(deburr(country), GEOCODE_LANGUAGE);
-}
-
-export async function fetchCities(country) {
+  }
+  async function fetchCities(country) {
     const countryCode = getCountryIsoCode(country);
 
     const getCities = async function(pageNo = 1) {
@@ -33,51 +33,62 @@ export async function fetchCities(country) {
 
     const getAllCities = async function(pageNo = 1) {
       const results = await getCities(pageNo);
-      console.log("Retreiving data from API for page : " + pageNo);
       if (results.length>0) {
         return results.concat(await getAllCities(pageNo+1));
       } else {
         return results;
       }
     };
-    try {
-      const cities = await getAllCities();
-      return getXCitiesWithMaxPollution(cities, MAX_POLLUTED_CITIES);
-    }
-    catch(e) {
-      console.log(e);
-    }
-
-}
-
-async function getXCitiesWithMaxPollution(cities, x) {
+    return getAllCities();
+  }
+  
+  async function getXCitiesWithMaxPollution(cities, x) {
     cities.sort((a, b) => (b.measurements[0].value - a.measurements[0].value));
 
     let topCities = [];
     
     do {
+      try {
         let place = await getCitysName(cities.shift());
         if(!topCities.find(element => element.city === place.city)) {
-            topCities.push(place);
+          topCities.push(place);
         }
+      }
+      catch(e) {
+        if(!(e.message === 'No name')) {
+          dispatch({ type: 'SET_ERROR', payload: e });
+          return;
+        }
+      }
     } while(topCities.length < x)
     
     return topCities;
-}
+  }
 
-async function getCitysName(element) {
+  async function getCitysName(element) {
     let query;
-    let place;
+    let retryCounter = 2;
     if(element.coordinates) {
-        query = `${element.coordinates.latitude}, ${element.coordinates.longitude}`;
-        place = await findCityByQuery(query);
+      query = `${element.coordinates.latitude}, ${element.coordinates.longitude}`;
     }
-    if(!place || !place.city || !place.country) {
-        query = element.city;
-        place = await findCityByQuery(query);
-    }
+    const fetch_retry = (query, n) => findCityByQuery(query).catch(function(error) {
+      if (n === 1) {
+        throw error;
+      }
+      query = element.city;
+      return fetch_retry(query, n - 1);
+  });
+    return await fetch_retry(query, retryCounter);
+  }
 
-    return { ...place, measurements: element.measurements }
+  try {
+    let result = await fetchCities(inputValue);
+    let topCities = getXCitiesWithMaxPollution(result, MAX_POLLUTED_CITIES);
+    return topCities;
+  }
+  catch(e) {
+    dispatch({ type: 'SET_ERROR', payload: e });
+  }
 }
 
 // Wikipedia description fetch

@@ -6,10 +6,10 @@ export async function findCityByQuery(query) {
     return opencage.geocode({key: OPENCAGE_API_KEY, q: query, language: GEOCODE_LANGUAGE})
         .then(res => {
             let city = (res.results[0].components.city || res.results[0].components.town || res.results[0].components.village || undefined)
-            let country = res.results[0].components.country;
+            let country = res.results[0].components.country || undefined;
+            if(!city || !country) {
+                throw new Error("No name");
+            }
             return { city, country };
-        })
-        .catch(err => {
-            console.log(err);
         })
 }

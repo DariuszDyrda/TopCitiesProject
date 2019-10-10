@@ -1,26 +1,32 @@
-import React, { useState } from 'react';
-import { fetchCities } from '../../utlis/fetchUtils';
+import React, { useState, useEffect } from 'react';
+import { dataFetching } from '../../utlis/fetchUtils';
 import { Form } from '../form/Form';
 import { DataList } from '../dataList/DataList';
 import './App.css';
 import { CustomSnackBar } from '../CustomSnackBar/CustomSnackBar';
+import { useSelector, useDispatch } from 'react-redux';
 
 function App() {
   const [cities, setCities] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const error = useSelector(state => state.error);
+  const dispatch = useDispatch();
 
-  async function handleSubmit(inputValue, e) {
+  useEffect(() => {
+    if(error.message) {
+      setMessage(error.message);
+      setOpen(true);
+    }
+  }, [error]);
+
+  async function handleSubmit(inputValue, event) {
     setIsLoading(true);
-    e.preventDefault();
-    let cities = await fetchCities(inputValue.trim());
+    event.preventDefault();
+    let cities = await dataFetching(inputValue.trim(), dispatch);
     if(cities) {
       setCities(cities);
-    }
-    else {
-      setMessage("Connection error!")
-      setOpen(true);
     }
     setIsLoading(false);
   }
