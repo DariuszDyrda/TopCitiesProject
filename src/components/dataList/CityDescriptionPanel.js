@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
       fontWeight: theme.typography.fontWeightRegular,
     },
     progress: {
-      
+      margin: '0 auto',
     }
   }));
 
@@ -31,6 +31,7 @@ export const CityDescriptionPanel = (props) => {
 
     const handlePanelClick = async (event, expanded) => {
       if(expanded && !description) {
+        setIsFetching(true);
         let data;
         try {
           data = await descryptionFetching(props.name, props.country, dispatch);
