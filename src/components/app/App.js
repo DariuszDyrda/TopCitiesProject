@@ -15,7 +15,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(error.message) {
+    if(error && error.message) {
       setMessage(error.message);
       setOpen(true);
     }

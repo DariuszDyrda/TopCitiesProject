@@ -35,7 +35,6 @@ export const CityDescriptionPanel = (props) => {
         let data;
         try {
           data = await descryptionFetching(props.name, props.country, dispatch);
-          console.log(data)
           data = clearDescriptionText(data);
         }
         catch(e) {
