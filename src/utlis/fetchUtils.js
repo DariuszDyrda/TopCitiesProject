@@ -116,3 +116,11 @@ const splitBilingualName = (name) => {
     } while(splittedWord.length < 2 && splitChars.length > 0)
     return splittedWord[0].trim();
   }
+
+  export const clearDescriptionText = (description) => {
+    const stringsToRemove = [' (listen)', ' see also other names'];
+    stringsToRemove.forEach(string => {
+      description = description.replace(string, "");
+    })
+    return description;
+  }
