@@ -11,7 +11,10 @@ function App() {
   async function handleSubmit(inputValue, e) {
     setIsLoading(true);
     e.preventDefault();
-    setCities(await fetchCities(inputValue.trim()));
+    let cities = await fetchCities(inputValue.trim());
+    if(cities) {
+      setCities(cities);
+    }
     setIsLoading(false);
   }
     return (

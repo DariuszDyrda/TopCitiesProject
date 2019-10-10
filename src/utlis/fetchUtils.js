@@ -13,34 +13,41 @@ function getCountryIsoCode(country) {
 
 export async function fetchCities(country) {
     const countryCode = getCountryIsoCode(country);
-    let cities = [];
-    // fetch with support for pagination
-    async function getPage(page = 1) {
-        const response = await axios.get(API.CITIES_POLLUTION_BASE_URL, {
-            params: {
-              country: countryCode,
-              parameter: POLLUTION_PARAMS.parameter,
-              order_by: 'city',
-              limit: 1000,
-              page: page
-            },
-            responseEncoding: 'UTF-8'
-          })
-          .then(res => {
-            return res.data
-          })
-          .catch(err => {
-            console.log(err);
-          });
-          page === 1 ? cities = [...response.results] : cities = cities.concat(response.results);
 
-          if(response.meta.limit * page < response.meta.found) {
-              await getPage(++response.meta.page);
-          }
+    const getCities = async function(pageNo = 1) {
+      const response = await axios.get(API.CITIES_POLLUTION_BASE_URL, {
+                params: {
+                  country: countryCode,
+                  parameter: POLLUTION_PARAMS.parameter,
+                  order_by: 'city',
+                  limit: 1000,
+                  page: pageNo
+                },
+                responseEncoding: 'UTF-8'
+              })
+              .then(res => {
+                return res.data.results;
+              })
+      return response;
+      }
+
+    const getAllCities = async function(pageNo = 1) {
+      const results = await getCities(pageNo);
+      console.log("Retreiving data from API for page : " + pageNo);
+      if (results.length>0) {
+        return results.concat(await getAllCities(pageNo+1));
+      } else {
+        return results;
+      }
+    };
+    try {
+      const cities = await getAllCities();
+      return getXCitiesWithMaxPollution(cities, MAX_POLLUTED_CITIES);
     }
-    await getPage();
+    catch(e) {
+      console.log(e);
+    }
 
-    return getXCitiesWithMaxPollution(cities, MAX_POLLUTED_CITIES);
 }
 
 async function getXCitiesWithMaxPollution(cities, x) {
@@ -108,7 +115,7 @@ export const getDescription = async (city, country) => {
   }
 
 const splitBilingualName = (name) => {
-    // some cities returned by Opencage are in bilingual format, so they habe to be splited before wikipedia request (for example "Llangréu/Langreo")
+    // some cities returned by Opencage are in bilingual format, so they havee to be splited before wikipedia request (for example "Llangréu/Langreo")
     let splitChars = ['/', '(', '-'];
     let splittedWord;
     do {
