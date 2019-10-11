@@ -48,7 +48,8 @@ export const CityDescriptionPanel = (props) => {
           data = clearDescriptionText(data);
         }
         catch(e) {
-          data = e.message;
+          setIsFetching(false);
+          return;
         }
         setDescription(data);
         setIsFetching(false);
@@ -64,7 +65,7 @@ export const CityDescriptionPanel = (props) => {
         >
           <div className={classes.panelSummary}>
             <Typography className={classes.heading}>{props.name}</Typography>
-            <Typography className={classes.heading}>{`${props.measurements[0].value} ${props.measurements[0].unit}`}</Typography>
+            <Typography className={classes.heading}>{`${Math.round(props.measurements[0].value)} ${props.measurements[0].unit}`}</Typography>
           </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>

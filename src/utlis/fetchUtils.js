@@ -4,6 +4,7 @@ import deburr from 'lodash/deburr';
 import { API, POLLUTION_PARAMS, DESCRIPTION_PARAMS } from '../consts/api';
 import { MAX_POLLUTED_CITIES, GEOCODE_LANGUAGE } from '../consts/config';
 import { findCityByQuery } from './geocode'
+import { strings } from '../consts/strings';
 
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
@@ -57,7 +58,7 @@ export async function dataFetching(inputValue, dispatch) {
         }
       }
       catch(e) {
-        if(!(e.message === 'No name')) {
+        if(!(e.message === strings.NO_NAME_ERROR)) {
           dispatch({ type: 'SET_ERROR', payload: e });
           return;
         }
@@ -119,13 +120,13 @@ export async function descryptionFetching(city, country, dispatch) {
           const pages = res.data.query.pages;
           const data = pages[Object.keys(pages)[0]].extract;
           if(!data) {
-            throw new Error("No description");
+            throw new Error(strings.NO_DESCRIPTION_ERROR);
           }
           return data;
         })
         .catch(err => {
           if(retryCounter < 1) {
-            if(err.message === "No description") {
+            if(err.message === strings.NO_DESCRIPTION_ERROR) {
               throw err;
             }
             dispatch({ type: 'SET_ERROR', payload: err})
