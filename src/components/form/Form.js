@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button'
@@ -22,8 +22,8 @@ export const Form = (props) => {
     const classes = useStyles();
 
     return (
-        <form noValidate autoComplete="off" onSubmit={props.handleSubmit.bind(this, inputValue)} className={classes.root}>
-            <Input setInputValue={setInputValue} setButtonDisabled={setButtonDisabled}/>
+        <form data-testid={'form'} noValidate autoComplete="off" onSubmit={props.handleSubmit.bind(this, inputValue)} className={classes.root}>
+            <Input setInputValue={setInputValue} setButtonDisabled={setButtonDisabled} />
             <Button disabled={buttonDisabled} variant="contained" type='submit' color="primary">{ strings.FORM_BUTTON_TEXT }</Button>
         </form>
     )

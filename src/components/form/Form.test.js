@@ -1,27 +1,21 @@
 import React from "react";
-import { render, unmountComponentAtNode } from "react-dom";
-import { act } from "react-dom/test-utils";
+import { Provider } from 'react-redux'
+import configureStore from 'redux-mock-store'
+import { render, fireEvent } from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
 
 import { Form } from "./Form";
 
-let container = null;
-beforeEach(() => {
-  // setup a DOM element as a render target
-  container = document.createElement("div");
-  document.body.appendChild(container);
-});
+describe("Form component", () => {
+  let initialState = {inputValue: ""}
+  let mockStore = configureStore();
+  const handleSubmit = jest.fn();
+  it("should call handle submit on submit", async () => {
+    let store = mockStore(initialState)
+    const { getByTestId } = render(<Provider store={store} ><Form handleSubmit={handleSubmit}></Form></Provider>)
 
-afterEach(() => {
-  // cleanup on exiting
-  unmountComponentAtNode(container);
-  container.remove();
-  container = null;
-});
+    fireEvent.submit(getByTestId('form'));
 
-it("should render a form", () => {
-  act(() => {
-    render(<Form />, container);
+    expect(handleSubmit).toBeCalled();
   });
-  expect(container).toMatchSnapshot();
-
-});
+})
