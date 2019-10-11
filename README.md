@@ -1,68 +1,54 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Top cities - recruitment task
 
-## Available Scripts
+React app fetching data about top 10 most polluted cities in given country (based on the latest measurements available for given place), alongside with their descriptions.
 
-In the project directory, you can run:
+## Getting Started
 
-### `npm start`
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Prerequisites
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+* npm
 
-### `npm test`
+### Installing
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone this repo
+2. Create .env file with your OpenCage API key
 
-### `npm run build`
+```
+cd top-cities
+touch .env
+echo "REACT_APP_OPENCAGE_API_KEY='YOUR_API_KEY_GOES_HERE'" > .env
+```
+3. Inside top-cities folder run:
+```
+npm install
+```
+4. Start the app with:
+```
+npm start
+```
+6. Visit [localhost:3000](http://localhost:3000)
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## Build with
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### APIs:
 
-### `npm run eject`
+* [OpenAQ](https://docs.openaq.org/) - data about pollution
+* [MediaWiki](https://www.mediawiki.org/wiki/API:Query) - Wikipedia articles
+* [OpenCage API](https://opencagedata.com/api) - data from OpenAQ were not always accurate, so I decited to use geocoder to determine city by it's coordinates.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Example of bad OpenAQ result (name instead of city and wrong character encoding):
+![Image](openaq_error.png)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Other tools:
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+* React (with Hooks)
+* Redux with Redux-persist - for keeping input value persistant and also for global error handling
+* Lodash - for handling diacritical chars
+* Downshift - autocomplete functionality
+* i18n-iso-countries - for converting input country into ISO code while making API request
+* Axios
+* Material UI
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
