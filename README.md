@@ -1,6 +1,6 @@
 # Top cities - recruitment task
 
-React app fetching data about top 10 most polluted cities in given country (based on the latest measurements available for given place), alongside with their descriptions.
+React app fetching data about top 10 most polluted cities in a given country (based on the latest measurements available for given place), alongside with their descriptions.
 
 ## Getting Started
 
@@ -37,7 +37,7 @@ npm start
 
 * [OpenAQ](https://docs.openaq.org/) - data about pollution
 * [MediaWiki](https://www.mediawiki.org/wiki/API:Query) - Wikipedia articles
-* [OpenCage API](https://opencagedata.com/api) - data from OpenAQ were not always accurate, so I decited to use geocoder to determine city by it's coordinates.
+* [OpenCage API](https://opencagedata.com/api) - data from OpenAQ were not always accurate, so I decided to use geocoder to determine city by its coordinates.
 
 Example of bad OpenAQ result (name instead of city and wrong character encoding):<br>
 ![Image](./openaq_error.PNG)
@@ -45,10 +45,10 @@ Example of bad OpenAQ result (name instead of city and wrong character encoding)
 ### Other tools:
 
 * React (with Hooks)
-* Redux with Redux-persist - for keeping input value persistant and also for global error handling
+* Redux with Redux-persist - for keeping input value persistent and also for global error handling
 * Lodash - for handling diacritical chars
 * Downshift - autocomplete functionality
-* i18n-iso-countries - for converting input country into ISO code while making API request
+* i18n-iso-countries - for converting input country into ISO code while making an API request
 * Axios
 * Material UI
 
