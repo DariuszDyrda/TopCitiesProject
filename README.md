@@ -39,7 +39,7 @@ npm start
 * [MediaWiki](https://www.mediawiki.org/wiki/API:Query) - Wikipedia articles
 * [OpenCage API](https://opencagedata.com/api) - data from OpenAQ were not always accurate, so I decited to use geocoder to determine city by it's coordinates.
 
-Example of bad OpenAQ result (name instead of city and wrong character encoding):
+Example of bad OpenAQ result (name instead of city and wrong character encoding):<br>
 ![Image](./openaq_error.PNG)
 
 ### Other tools:
