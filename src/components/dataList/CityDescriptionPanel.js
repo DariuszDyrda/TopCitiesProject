@@ -14,6 +14,12 @@ const useStyles = makeStyles(theme => ({
     root: {
       width: '100%',
     },
+    panelSummary: {
+      display: 'flex',
+      flexDirection: 'row',
+      flexGrow: 1,
+      justifyContent: 'space-between',
+    },
     heading: {
       fontSize: theme.typography.pxToRem(15),
       fontWeight: theme.typography.fontWeightRegular,
@@ -52,7 +58,10 @@ export const CityDescriptionPanel = (props) => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography className={classes.heading}>{props.name}</Typography>
+          <div className={classes.panelSummary}>
+            <Typography className={classes.heading}>{props.name}</Typography>
+            <Typography className={classes.heading}>{`${props.measurements[0].value} ${props.measurements[0].unit}`}</Typography>
+          </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
         {isFetching ? (<CircularProgress className={classes.progress} />) : (
@@ -67,4 +76,5 @@ export const CityDescriptionPanel = (props) => {
 CityDescriptionPanel.propTypes = {
   name: PropTypes.string.isRequired,
   country: PropTypes.string.isRequired,
+  measurements: PropTypes.array.isRequired,
 }

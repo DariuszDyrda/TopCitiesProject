@@ -49,9 +49,11 @@ export async function dataFetching(inputValue, dispatch) {
     
     do {
       try {
-        let place = await getCitysName(cities.shift());
+        let city = cities.shift();
+        let place = await getCitysName(city);
+        let measurements = city.measurements;
         if(!topCities.find(element => element.city === place.city)) {
-          topCities.push(place);
+          topCities.push({ ...place, measurements });
         }
       }
       catch(e) {
