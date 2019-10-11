@@ -1,7 +1,8 @@
 import * as opencage from 'opencage-api-client';
-import { OPENCAGE_API_KEY } from '../consts/api.secret';
 import { GEOCODE_LANGUAGE } from '../consts/config';
 import { strings } from '../consts/strings';
+
+const OPENCAGE_API_KEY = process.env.REACT_APP_OPENCAGE_API_KEY;
 
 export async function findCityByQuery(query) {
     return opencage.geocode({key: OPENCAGE_API_KEY, q: query, language: GEOCODE_LANGUAGE})
