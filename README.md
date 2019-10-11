@@ -40,7 +40,7 @@ npm start
 * [OpenCage API](https://opencagedata.com/api) - data from OpenAQ were not always accurate, so I decited to use geocoder to determine city by it's coordinates.
 
 Example of bad OpenAQ result (name instead of city and wrong character encoding):
-![Image](openaq_error.png)
+![Image](./openaq_error.PNG)
 
 ### Other tools:
 
