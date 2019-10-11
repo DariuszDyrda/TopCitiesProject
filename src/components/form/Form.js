@@ -10,7 +10,8 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         flexGrow: 1,
         width: '100%',
-        margin: "0 auto",
+        marginBottom: '3px',
+        marginTop: '30px',
     },
 }))
 

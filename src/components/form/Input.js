@@ -12,6 +12,7 @@ import { strings } from '../../consts/strings';
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
+    marginRight: '5px',
   },
   container: {
     flexGrow: 1,

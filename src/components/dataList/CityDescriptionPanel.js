@@ -17,8 +17,12 @@ const useStyles = makeStyles(theme => ({
     panelSummary: {
       display: 'flex',
       flexDirection: 'row',
+      flexWrap: 'no-wrap',
       flexGrow: 1,
       justifyContent: 'space-between',
+    },
+    description: {
+      textAlign: 'justify',
     },
     heading: {
       fontSize: theme.typography.pxToRem(15),
@@ -65,7 +69,7 @@ export const CityDescriptionPanel = (props) => {
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
         {isFetching ? (<CircularProgress className={classes.progress} />) : (
-          <Typography>
+          <Typography className={classes.description}>
               {description}
           </Typography>)}
         </ExpansionPanelDetails>

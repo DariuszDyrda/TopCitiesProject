@@ -1,7 +1,24 @@
 .App {
+  width: 50%;
+  min-width: 300px;
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  width: 50%;
   margin: 0 auto;
+}
+
+@media(max-width: 1000px) {
+  .App {
+    width: 70%;
+  }
+}
+@media(max-width: 900px) {
+  .App {
+    width: 80%;
+  }
+}
+@media(max-width: 800px) {
+  .App {
+    width: 90%;
+  }
 }
